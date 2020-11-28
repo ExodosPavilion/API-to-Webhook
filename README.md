@@ -12,6 +12,8 @@ My goals for this project will be:
 Just to test funcunality I will use a manga that is constantly updated.
 
 Relevant Links:
+```
   https://mangadex.org/
   https://mangadex.org/api/v2/
   https://mangadex.org/api/v2/manga/53724
+```
