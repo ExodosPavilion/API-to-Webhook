@@ -1,0 +1,26 @@
+{
+	"code": 200,
+	"status": "OK",
+	"data": {
+		"id": 559480,
+		"hash": "8886e4150bf6e05f5791f9d2a09e9081",
+		"mangaId": 30461,
+		"mangaTitle": "Bocchi-sensei! Teach me MangaDex!",
+		"volume": "",
+		"chapter": "13",
+		"title": "Reporting A Comment, Enabling Two-factor Authentication",
+		"language": "gb",
+		"groups": [{
+			"id": 1,
+			"name": "Doki Fansubs"
+		}],
+		"uploader": 3,
+		"timestamp": 1552339811,
+		"comments": 14,
+		"views": 33151,
+		"status": "OK",
+		"pages": ["C1.png"],
+		"server": "https:\/\/9ejv12fp3sn2a.h84298dtq2skg.mangadex.network:443\/kaA6AF5PtQEKK7GO8JWuOhoNbw-PYVxfqe6XV7Wh_OYpnR7qmJFPW-un1284gIse6nYomtV-PoCk04-650MwvkihMdgx3UKu_JBHYpRFwEbjIV8YYPxRpFLSA-eSIVXY6q4QJaVGwsnFV-9RXoMfnBf0txb0VGBaCTuxzqT9_Py5SDdSoB7OPpn_sEU7QEOzSaky_fp4w_zxmMfBLU_OpyTrVKfhcA\/data\/",
+		"serverFallback": "https:\/\/s2.mangadex.org\/data\/"
+	}
+}

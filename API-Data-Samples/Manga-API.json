@@ -1,0 +1,43 @@
+{
+	"code": 200,
+	"status": "OK",
+	"data": {
+		"id": 30461,
+		"title": "Bocchi-sensei! Teach me MangaDex!",
+		"altTitles": ["Bocchi-sensei ! Enseigne-moi MangaDex!", "Bocchi-sensei! MangaDex oshiete!", "\u307c\u3063\u3061\u5148\u751f\uff01MangaDex \u304a\u3057\u3048\u3066\uff01"],
+		"description": "Site help manga.\r\n\r\nTo be expanded with additional guides.\r\n\r\nIf you'd like the PSD files to translate to another language PM ixlone on site, @ixlone in comments, ping me on Discord, etc.",
+		"artist": ["Bocchi-sensei"],
+		"author": ["Bocchi-sensei"],
+		"publication": {
+			"language": "gb",
+			"status": 1,
+			"demographic": 0
+		},
+		"tags": [7],
+		"lastChapter": null,
+		"lastVolume": null,
+		"isHentai": false,
+		"links": null,
+		"relations": [{
+			"id": 14508,
+			"title": "Hitoribocchi no \u25cb\u25cb Seikatsu",
+			"type": 9,
+			"isHentai": false
+		}, {
+			"id": 30195,
+			"title": "Bocchi-sensei! Teach me Scanlation!",
+			"type": 12,
+			"isHentai": false
+		}],
+		"rating": {
+			"bayesian": 9.21,
+			"mean": 9.25,
+			"users": 2336
+		},
+		"views": 1216427,
+		"follows": 11906,
+		"comments": 188,
+		"lastUploaded": 1606550497,
+		"mainCover": "https:\/\/mangadex.org\/images\/manga\/30461.gif?1537625720"
+	}
+}
