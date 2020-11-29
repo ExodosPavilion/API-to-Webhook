@@ -1,5 +1,8 @@
 import sqlite3 as sl
 
+#https://www.sqlitetutorial.net/sqlite-where/
+#that link helped a lot
+
 con = sl.connect('my-test.db') #Create and / or connect to a database (exsisting or not)
 
 '''
@@ -15,21 +18,43 @@ with con:
         );
     """)
 
+
 #only needed when we need to add new records to the database
 sql = 'INSERT INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
 data = [
-    (1, 'Alice', 21),
-    (2, 'Bob', 22),
     (3, 'Chris', 23)
 ]
 
 #actual insertion code
 with con:
     con.executemany(sql, data)
-'''
 
+'''
 #Query the table and get the results
+test = "Bob"
 with con:
-    data = con.execute("SELECT * FROM USER WHERE age <= 22")
+    data = con.execute("SELECT * FROM USER WHERE name = '" + test + "'")
     for row in data:
         print(row)
+
+	#or we can do
+	#data.fetchall() to get all the rows in a list1
+
+with con:
+	con.execute("DELETE FROM USER WHERE id = 3")
+
+
+	with con:
+	data = con.execute("SELECT * FROM USER")
+
+	print(data.fetchall())
+
+
+sql = 'INSERT INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
+data = [
+    (3, 'Chris', 23)
+]
+
+#actual insertion code
+with con:
+    con.executemany(sql, data)

@@ -1,0 +1,15 @@
+Manga
+  |
+  |--Manga ID
+  |
+  |--Manga Name
+  |
+  |--Last Uploaded time
+  |
+  |--Last Checked Chapter ID
+
+JSON
+  |
+  |--Last Checked time
+  |
+  |--Database Intialized

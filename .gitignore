@@ -131,3 +131,6 @@ dmypy.json
 # Project specific
 *.json
 !API-Data-Samples/*.json
+
+*.db
+!Demos/*.db
