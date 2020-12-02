@@ -3,7 +3,7 @@ import sqlite3 as sl
 
 DATABASE_NAME = 'manga.db'
 TABLE_NAME = 'MANGA'
-COLUMNS = ['MANGA-ID', 'MANGA-NAME', 'LAST-UPLOADED-TIME', 'LAST-CHECKED-CHAPTER-ID']
+COLUMNS = ['MangaID', 'MangaName', 'LastUploadedTime', 'LastCheckedChapterID']
 
 def connectDB():
 	#create or connect to an existing database
@@ -136,3 +136,12 @@ def updateCheckedChapterId( id, data, connection ):
 
 	with connection:
 		connection.execute( updateString )
+
+def printDataBase():
+	dbConnection = connectDB()
+	data = getAllRecords(dbConnection)
+
+	for item in data:
+		print(item)
+
+printDataBase()

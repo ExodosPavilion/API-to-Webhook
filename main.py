@@ -3,9 +3,15 @@ import requests, discord, json
 from requests.auth import HTTPBasicAuth 
 from discord import Webhook, RequestsWebhookAdapter, File
 
-GENERAL_AUTH_DATA_FILE = "accessData.json"
+GENERAL_AUTH_DATA_FILE = "authData.json"
 JSON_DATA_FILE = "data.json"
 
+AUTH_DATA = None
+JSON_DATA = None
+
+DB_CONNECTION = None
+
+WEBHOOK = None
 
 def getJsonData(jsonFileName):
 	data = None
@@ -22,44 +28,50 @@ def saveJsonData(data, jsonFileName):
 
 
 
-authData = getJsonData(GENERAL_AUTH_DATA_FILE)
-'''
-	will have the following 2 items:
+def startUp():
+	auth_data = getJsonData(GENERAL_AUTH_DATA_FILE)
+	'''
+		will have the following 2 items:
 
-	WEBHOOK_ID: id-number
-	WEBHOOK_TOKEN: token
-	
-	userID: id of the user
-	mangadex_session: the session id,
-	mangadex_rememberme_token: the rememberme token,
-	User-Agent: local useragent
-'''
+		WEBHOOK_ID: id-number
+		WEBHOOK_TOKEN: token
+		
+		userID: id of the user
+		mangadex_session: the session id,
+		mangadex_rememberme_token: the rememberme token,
+		User-Agent: local useragent
+	'''
 
-jsonData = getJsonData(JSON_DATA_FILE)
-'''
-	will have the following 2 items:
+	json_data = getJsonData(JSON_DATA_FILE)
+	'''
+		will have the following 2 items:
 
-	Last_Checked_time: 1606572866,
-	Database Intialized: false,
-'''
+		Last_Checked_time: 1606572866,
+		Database Intialized: false,
+	'''
 
-# Create webhook
-webhook = Webhook.partial(authData['WEBHOOK_ID'], authData['WEBHOOK_TOKEN'], adapter=RequestsWebhookAdapter())
+	# Create webhook
+	webhook = Webhook.partial(auth_data['WEBHOOK_ID'], auth_data['WEBHOOK_TOKEN'], adapter=RequestsWebhookAdapter())
 
-dbConnection = dbMan.connectDB()
+	db_connection = dbMan.connectDB()
 
-if !jsonData['Database Intialized']:
-	dbMan.initializeDB(dbConnection)
-	jsonData['Database Intialized'] = True
-	saveJsonData(jsonData, JSON_DATA_FILE)
+	if not (json_data):
+		dbMan.initializeDB(DB_CONNECTION)
+		json_data['Database Intialized'] = True
+		saveJsonData(json_data, JSON_DATA_FILE)
 
+
+	return auth_data, json_data, webhook, db_connection
+
+
+#----------------------- API Get functions ------------------------------
 
 def getFollowedMangaAPIData():
-	apiSite = 'https://mangadex.org/api/v2/user/{}/followed-manga'.format( authData['userID'] )
+	apiSite = 'https://mangadex.org/api/v2/user/{}/followed-manga'.format( AUTH_DATA['userID'] )
 
 	headers={}
-	headers['Cookie'] = "mangadex_session={}; mangadex_rememberme_token={}".format( authData['mangadex_session'], authData['mangadex_rememberme_token'] )
-	headers['User-Agent'] = authData['User-Agent']
+	headers['Cookie'] = "mangadex_session={}; mangadex_rememberme_token={}".format( AUTH_DATA['mangadex_session'], AUTH_DATA['mangadex_rememberme_token'] )
+	headers['User-Agent'] = AUTH_DATA['User-Agent']
 
 	res = requests.get(apiSite, headers=headers)
 	res.raise_for_status()
@@ -92,3 +104,69 @@ def getChapterAPIData( chapterID ):
 	res.raise_for_status()
 
 	return json.loads( res.text )
+
+
+def prettyPrintJson( jsonData ):
+	print( json.dumps( jsonData, indent=4, sort_keys=False) )
+
+def getEnglishChapters( mangaChapterAPIData ):
+	englishChapters = []
+
+	for chapterData in mangaChapterAPIData['data']['chapters']:
+		if chapterData['language'] == 'gb':
+				englishChapters.append(chapterData)
+
+	return englishChapters
+
+
+def mdListToDB(dbConnection):
+	followedManga = getFollowedMangaAPIData()
+	print('Got MDList\n')
+	listData = []
+	totalItems = len( followedManga['data'] )
+	count = 1
+
+	for item in followedManga['data']:
+		try:
+			print('Adding (' + str(count) + '/' + str(totalItems) + '): ' + item['mangaTitle'])
+			recordData = []
+			recordData.append( item['mangaId'] )
+			recordData.append( item['mangaTitle'] )
+			
+			mangaData = getMangaAPIData( item['mangaId'] )
+			recordData.append( mangaData['data']['lastUploaded'] )
+			print('\tGot Manga API data')
+
+			chapters = getEnglishChapters( getMangaChaptersAPIData( item['mangaId'] ) )
+			recordData.append( chapters[0]['id'] )
+			print('\tGot latest manga')
+			
+			listData.append(recordData)
+		except:
+			count += 1
+			continue
+
+		count += 1
+	
+	dbMan.addRecord(listData, dbConnection)
+
+
+def updateOne(mangaID, dbConnection):
+	recordData = dbMan.getMangaByID(mangaID, dbConnection)
+	
+	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) )
+	
+	if chaptersData[0]['id'] != recordData[3]:
+		dbMan.updateCheckedChapterId( managaID, chaptersData[0]['id'], dbConnection )
+
+
+def checkForUpdates(dbConnection):
+	allRecords = dbMan.getAllRecords(dbConnection)
+
+	for record in allRecords:
+		updateOne(record[0], dbConnection)
+
+	
+AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
+
+mdListToDB(DB_CONNECTION)

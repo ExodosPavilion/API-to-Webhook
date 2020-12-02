@@ -22,14 +22,25 @@ with con:
 #only needed when we need to add new records to the database
 sql = 'INSERT INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
 data = [
-    (3, 'Chris', 23)
+	[4, 'Joe', 25]
 ]
 
 #actual insertion code
 with con:
     con.executemany(sql, data)
+'''
+
+with con:	
+	data = con.execute("SELECT * FROM USER WHERE id = 2")
+    #data = con.execute("UPDATE USER SET name = 'Bobby' WHERE id = 2")
+	
+	temp = data.fetchall()
+	
+	print( type(temp) )
+	print( temp )
 
 '''
+
 #Query the table and get the results
 test = "Bob"
 with con:
@@ -58,3 +69,4 @@ data = [
 #actual insertion code
 with con:
     con.executemany(sql, data)
+'''
