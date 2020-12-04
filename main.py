@@ -55,8 +55,8 @@ def startUp():
 
 	db_connection = dbMan.connectDB()
 
-	if not (json_data):
-		dbMan.initializeDB(DB_CONNECTION)
+	if not (json_data['Database Intialized']):
+		dbMan.initializeDB(db_connection)
 		json_data['Database Intialized'] = True
 		saveJsonData(json_data, JSON_DATA_FILE)
 
@@ -157,10 +157,12 @@ def updateOne(mangaID, dbConnection):
 	recordData = dbMan.getMangaByID(mangaID, dbConnection)
 	
 	updateDict['mangaName'] = recordData[0][1]
+
+	print('Checking ' + updateDict['mangaName'])
 	
 	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) )
-	
-	if chaptersData[0]['id'] != recordData[3]:
+
+	if chaptersData[0]['id'] != recordData[0][3]:
 		dbMan.updateCheckedChapterId( managaID, chaptersData[0]['id'], dbConnection )
 		updateDict['updated'] = True 
 		updateDict['chapterLink'] = 'https://mangadex.org/chapter/' + chaptersData[0]['id']
@@ -184,7 +186,6 @@ def runUpdatesToWebHook(webHook, dbConnection):
 	dataToSend = checkForUpdates(dbConnection)
 	
 	for data in dataToSend:
-		strToSend =  + ' status: '
 		e = discord.Embed( title = data['mangaName'] )
 		
 		if data['updated']:
@@ -199,4 +200,5 @@ def runUpdatesToWebHook(webHook, dbConnection):
 
 AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
 
+#mdListToDB(DB_CONNECTION)
 runUpdatesToWebHook(WEBHOOK, DB_CONNECTION)
