@@ -152,21 +152,51 @@ def mdListToDB(dbConnection):
 
 
 def updateOne(mangaID, dbConnection):
+	updateDict = {'mangaId': mangaID, 'mangaName': '', 'updated': False, 'chapterLink': ''}
+
 	recordData = dbMan.getMangaByID(mangaID, dbConnection)
+	
+	updateDict['mangaName'] = recordData[0][1]
 	
 	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) )
 	
 	if chaptersData[0]['id'] != recordData[3]:
 		dbMan.updateCheckedChapterId( managaID, chaptersData[0]['id'], dbConnection )
+		updateDict['updated'] = True 
+		updateDict['chapterLink'] = 'https://mangadex.org/chapter/' + chaptersData[0]['id']
+	
+	return updateDict
 
 
 def checkForUpdates(dbConnection):
 	allRecords = dbMan.getAllRecords(dbConnection)
+	updateDicts = []
 
 	for record in allRecords:
-		updateOne(record[0], dbConnection)
-
+		updateDicts.append( updateOne( int( record[0] ), dbConnection) )
 	
+	return updateDicts
+
+
+def runUpdatesToWebHook(webHook, dbConnection):
+	webHook.send('Checking for Updates')
+
+	dataToSend = checkForUpdates(dbConnection)
+	
+	for data in dataToSend:
+		strToSend =  + ' status: '
+		e = discord.Embed( title = data['mangaName'] )
+		
+		if data['updated']:
+			e.add_field( name="Updated", value="Yes" )
+			e.add_field( name="Link", value=data['chapterLink'] )
+		else:
+			e.add_field( name="Updated", value="No" )
+		
+		webHook.send( embed=e )
+
+
+
 AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
 
-mdListToDB(DB_CONNECTION)
+runUpdatesToWebHook(WEBHOOK, DB_CONNECTION)

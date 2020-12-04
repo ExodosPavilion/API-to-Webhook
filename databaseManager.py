@@ -57,8 +57,8 @@ def getMangaByID(id, connection):
 	data = None
 
 	with connection:
-		data = connection.execute("SELECT * FROM " + TABLE_NAME + "WHERE " + COLUMNS[0] + " = " + id)
-
+		data = connection.execute( "SELECT * FROM {} WHERE {} = {}".format(TABLE_NAME, COLUMNS[0], id) )
+	
 	return data.fetchall()
 
 
@@ -144,4 +144,4 @@ def printDataBase():
 	for item in data:
 		print(item)
 
-printDataBase()
+#printDataBase()
