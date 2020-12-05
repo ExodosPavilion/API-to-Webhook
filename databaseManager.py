@@ -27,7 +27,7 @@ def initializeDB(connection):
 #--------------------- RECORD ADDITION METHODS --------------------------------
 
 def addRecord(data, connection):
-	addRecString = 'INSERT INTO ' + TABLE_NAME + ' ({}, {}, {}, {}) values(?, ?, ?, ?)'.format(*COLUMNS) #insert command of a new record
+	addRecString = 'INSERT OR IGNORE INTO ' + TABLE_NAME + ' ({}, {}, {}, {}) values(?, ?, ?, ?)'.format(*COLUMNS) #insert command of a new record
 
 	#actual insertion code
 	with connection:

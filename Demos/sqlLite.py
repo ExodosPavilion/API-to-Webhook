@@ -18,20 +18,22 @@ with con:
         );
     """)
 
-
+'''
 #only needed when we need to add new records to the database
 sql = 'INSERT INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
 data = [
 	[4, 'Joe', 25]
 ]
 
-#actual insertion code
-with con:
-    con.executemany(sql, data)
-'''
+try:
+	#actual insertion code
+	with con:
+		con.executemany(sql, data)
+except sqlite3.IntegrityError:
+	print('yea')
 
 with con:	
-	data = con.execute("SELECT * FROM USER WHERE id = 2")
+	data = con.execute("SELECT * FROM USER")
     #data = con.execute("UPDATE USER SET name = 'Bobby' WHERE id = 2")
 	
 	temp = data.fetchall()

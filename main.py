@@ -1,7 +1,8 @@
 import databaseManager as dbMan
-import requests, discord, json
+import requests, discord, json, time
 from requests.auth import HTTPBasicAuth 
 from discord import Webhook, RequestsWebhookAdapter, File
+from multiprocessing import Process
 
 GENERAL_AUTH_DATA_FILE = "authData.json"
 JSON_DATA_FILE = "data.json"
@@ -47,7 +48,7 @@ def startUp():
 		will have the following 2 items:
 
 		Last_Checked_time: 1606572866,
-		Database Intialized: false,
+		Intialized: false,
 	'''
 
 	# Create webhook
@@ -55,9 +56,10 @@ def startUp():
 
 	db_connection = dbMan.connectDB()
 
-	if not (json_data['Database Intialized']):
+	if not (json_data):
 		dbMan.initializeDB(db_connection)
-		json_data['Database Intialized'] = True
+		mdListToDB(db_connection)
+		json_data['Intialized'] = True
 		saveJsonData(json_data, JSON_DATA_FILE)
 
 
@@ -143,6 +145,7 @@ def mdListToDB(dbConnection):
 			
 			listData.append(recordData)
 		except:
+            print(item['mangaTitle'] + ' already in database')
 			count += 1
 			continue
 
@@ -161,7 +164,7 @@ def updateOne(mangaID, dbConnection):
 	print('Checking ' + updateDict['mangaName'])
 	
 	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) )
-
+	
 	if chaptersData[0]['id'] != recordData[0][3]:
 		dbMan.updateCheckedChapterId( managaID, chaptersData[0]['id'], dbConnection )
 		updateDict['updated'] = True 
@@ -186,19 +189,29 @@ def runUpdatesToWebHook(webHook, dbConnection):
 	dataToSend = checkForUpdates(dbConnection)
 	
 	for data in dataToSend:
-		e = discord.Embed( title = data['mangaName'] )
-		
 		if data['updated']:
-			e.add_field( name="Updated", value="Yes" )
+			e = discord.Embed( title = data['mangaName'] )
 			e.add_field( name="Link", value=data['chapterLink'] )
-		else:
-			e.add_field( name="Updated", value="No" )
 		
 		webHook.send( embed=e )
-
+	
+	webHook.send( 'Update check finished' )
 
 
 AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
 
-#mdListToDB(DB_CONNECTION)
-runUpdatesToWebHook(WEBHOOK, DB_CONNECTION)
+def dailyUpdateCheck(webHook, dbCon):
+	while True:
+		time.sleep(60 * 60 * 24)
+		runUpdatesToWebHook(WEBHOOK, dbCon)
+
+def weeklyMDCheck(dbCon):
+	while True:
+		time.sleep(60 * 60 * 24 * 7)
+		mdListToDB(dbCon)
+
+
+process1 = Process(target=dailyUpdateCheck, args=(WEBHOOK, DB_CONNECTION,))
+process2 = Process(target=weeklyMDCheck, args=(DB_CONNECTION,))
+process1.start()
+process2.start()
