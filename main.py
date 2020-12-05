@@ -81,9 +81,10 @@ def startUp():
 	
 	json_data = getJsonData(JSON_DATA_FILE)
 	'''
-		will have the following 1 item:
+		will have the following 2 items:
 		
-		Initialized: whether the database was initialized and MDList data added or not
+		Database Created: whether the database was created or not
+		MDList Added:  whether the MDList data added or not
 	'''
 	
 	# Create webhook
@@ -92,10 +93,9 @@ def startUp():
 	db_connection = dbMan.connectDB() #connect to the database
 	
 	#if the database was not initialized before
-	if not ( json_data['Initialized'] ):
+	if not ( json_data['Database Created'] ):
 		dbMan.initializeDB(db_connection) #initialize database
-		mdListToDB(db_connection) #add MDList data to database
-		json_data['Initialized'] = True #set Initialized to true so that the if is not run the next time
+		json_data['Database Created'] = True #set Database Created to true so that the it is not run the next time
 		saveJsonData(json_data, JSON_DATA_FILE) #save the JSON data
 	
 	return auth_data, json_data, webhook, db_connection
@@ -381,6 +381,11 @@ def weeklyMDCheck(dbCon):
 #-------------------- MULTI-THREAD RELATED METHODS --------------------
 
 AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
+
+if not ( AUTH_DATA['MDList Added'] ):
+	mdListToDB(db_connection) #add MDList data to database
+	JSON_DATA['MDList Added'] = True #set MDList Added to true so that the it is not run the next time
+	saveJsonData(JSON_DATA, JSON_DATA_FILE) #save the JSON data
 
 process1 = Process(target=dailyUpdateCheck, args=(WEBHOOK, DB_CONNECTION,))
 process2 = Process(target=weeklyMDCheck, args=(DB_CONNECTION,))
