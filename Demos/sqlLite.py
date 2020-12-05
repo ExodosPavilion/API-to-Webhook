@@ -36,7 +36,10 @@ with con:
 	temp = data.fetchall()
 	
 	print( type(temp) )
-	print( temp )
+	
+	for tempo in temp:
+		print(tempo[0])
+	print( temp == [] )
 
 '''
 
