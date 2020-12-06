@@ -54,7 +54,7 @@ def saveJsonData(data, jsonFileName):
 
 def getEnvironmentVariables():
 	return	{
-		'WEBHOOK_ID': int( os.getenv('WEBHOOK_ID') )
+		'WEBHOOK_ID': int( os.getenv('WEBHOOK_ID') ),
 		'WEBHOOK_TOKEN': os.getenv('WEBHOOK_TOKEN'),
 
 		'userID': int( os.getenv('userID') ),
