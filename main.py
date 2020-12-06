@@ -279,7 +279,7 @@ def updateOne(recordData, dbConnection):
 
 	print('Checking ' + updateDict['mangaName'])
 	
-	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) ) #get the english chapter data
+	chaptersData = getEnglishChapters( getMangaChaptersAPIData(recordData.mangaID) ) #get the english chapter data
 	
 	#if the mangaid was found in the database AND the latest chapter id from the API data doesn't match the one stored in the database
 	if chaptersData[0]['id'] != recordData.lastCheckedChapterID:
@@ -383,12 +383,16 @@ def weeklyMDCheck(dbCon):
 
 AUTH_DATA, JSON_DATA, WEBHOOK, DB_CONNECTION = startUp()
 
-if not ( AUTH_DATA['MDList Added'] ):
-	mdListToDB(db_connection) #add MDList data to database
+if not ( JSON_DATA['MDList Added'] ):
+	mdListToDB(DB_CONNECTION) #add MDList data to database
 	JSON_DATA['MDList Added'] = True #set MDList Added to true so that the it is not run the next time
 	saveJsonData(JSON_DATA, JSON_DATA_FILE) #save the JSON data
 
+runUpdatesToWebHook(WEBHOOK, DB_CONNECTION)
+
+'''
 process1 = Process(target=dailyUpdateCheck, args=(WEBHOOK, DB_CONNECTION,))
 process2 = Process(target=weeklyMDCheck, args=(DB_CONNECTION,))
 process1.start()
 process2.start()
+'''
