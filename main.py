@@ -5,7 +5,6 @@ from discord import Webhook, RequestsWebhookAdapter, File
 from multiprocessing import Process
 from Record import Record
 
-GENERAL_AUTH_DATA_FILE = "authData.json"
 JSON_DATA_FILE = "data.json"
 
 AUTH_DATA = None
@@ -53,6 +52,17 @@ def saveJsonData(data, jsonFileName):
 #END
 #----------------------- JSON FUNCTIONS ------------------------------
 
+def getEnvironmentVariables():
+	return	{
+		'WEBHOOK_ID': int( os.getenv('WEBHOOK_ID') )
+		'WEBHOOK_TOKEN': os.getenv('WEBHOOK_TOKEN'),
+
+		'userID': int( os.getenv('userID') ),
+		'mangadex_session': os.getenv('mangadex_session'),
+		'mangadex_rememberme_token': os.getenv('mangadex_rememberme_token'),
+		'User-Agent': os.getenv('User-Agent')
+	}
+
 def startUp():
 	'''
 		Run when the script is first run, used to get info to run properly
@@ -67,7 +77,7 @@ def startUp():
 			db_connection = connection to the manga database
 	'''
 	
-	auth_data = getJsonData(GENERAL_AUTH_DATA_FILE)
+	auth_data = getEnvironmentVariables()
 	'''
 		will have the following 2 items:
 		
@@ -79,8 +89,12 @@ def startUp():
 		mangadex_rememberme_token: the rememberme token,
 		User-Agent: local useragent
 	'''
-	
-	json_data = getJsonData(JSON_DATA_FILE)
+	try:
+		json_data = getJsonData(JSON_DATA_FILE)
+	except FileNotFoundError:
+		#since the JSON file would not exist
+		json_data = { 'Database Created': False, 'MDList Added': False }
+		saveJsonData(json_data, JSON_DATA_FILE) #save the JSON data
 	'''
 		will have the following 2 items:
 		
