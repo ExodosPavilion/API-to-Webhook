@@ -1,5 +1,5 @@
 import databaseManager as dbMan
-import requests, discord, json, time
+import requests, discord, json, time, os
 from requests.auth import HTTPBasicAuth 
 from discord import Webhook, RequestsWebhookAdapter, File
 from multiprocessing import Process
