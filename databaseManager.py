@@ -1,5 +1,5 @@
 import sqlite3 as sl
-from Record import Record 
+from Record import Record
 
 
 DATABASE_NAME = 'manga.db'

@@ -3,6 +3,7 @@ import requests, discord, json, time
 from requests.auth import HTTPBasicAuth 
 from discord import Webhook, RequestsWebhookAdapter, File
 from multiprocessing import Process
+from Record import Record
 
 GENERAL_AUTH_DATA_FILE = "authData.json"
 JSON_DATA_FILE = "data.json"
@@ -247,7 +248,7 @@ def mdListToDB(dbConnection):
 			recordData.append( chapters[0]['id'] ) #the id of the latest english chapter
 			print('\tGot latest manga')
 			
-			listData.append(recordData)
+			listData.append( recordData )
 		except:
 			#this a try except block so as to continue adding the data to listData
 			count += 1
@@ -272,7 +273,7 @@ def updateOne(recordData, dbConnection):
 		returns:
 			updateDict = dict of relevant data to send to the webhook
 	'''
-	updateDict = {'mangaId': recordData[0], 'mangaName': recordData[1], 'updated': False, 'chapterLink': ''} 
+	updateDict = {'mangaId': recordData.mangaID, 'mangaName': recordData.mangaName, 'updated': False, 'chapterLink': ''} 
 
 	#recordData = dbMan.getMangaByID(mangaID, dbConnection) #get the manga data from the database
 
@@ -281,8 +282,8 @@ def updateOne(recordData, dbConnection):
 	chaptersData = getEnglishChapters( getMangaChaptersAPIData(mangaID) ) #get the english chapter data
 	
 	#if the mangaid was found in the database AND the latest chapter id from the API data doesn't match the one stored in the database
-	if chaptersData[0]['id'] != recordData[2]:
-		dbMan.updateCheckedChapterId( recordData[0], chaptersData[0]['id'], dbConnection ) #update the latest chapter id in the database
+	if chaptersData[0]['id'] != recordData.lastCheckedChapterID:
+		dbMan.updateCheckedChapterId( recordData.mangaID, chaptersData[0]['id'], dbConnection ) #update the latest chapter id in the database
 		updateDict['updated'] = True #set the updated value to true in the update dict
 		updateDict['chapterLink'] = 'https://mangadex.org/chapter/' + chaptersData[0]['id'] #set the link to the chapter
 	
