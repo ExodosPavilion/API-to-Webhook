@@ -360,8 +360,8 @@ def dailyUpdateCheck(webHook, dbCon):
 			None
 	'''
 	while True:
-		time.sleep(60 * 60 * 24) #sleep the function for 1 day (60 sec * 60 min * 24 hr)
 		runUpdatesToWebHook(WEBHOOK, dbCon)
+		time.sleep(60 * 60 * 24) #sleep the function for 1 day (60 sec * 60 min * 24 hr)
 
 def weeklyMDCheck(dbCon):
 	'''
@@ -388,11 +388,8 @@ if not ( JSON_DATA['MDList Added'] ):
 	JSON_DATA['MDList Added'] = True #set MDList Added to true so that the it is not run the next time
 	saveJsonData(JSON_DATA, JSON_DATA_FILE) #save the JSON data
 
-runUpdatesToWebHook(WEBHOOK, DB_CONNECTION)
 
-'''
 process1 = Process(target=dailyUpdateCheck, args=(WEBHOOK, DB_CONNECTION,))
 process2 = Process(target=weeklyMDCheck, args=(DB_CONNECTION,))
 process1.start()
 process2.start()
-'''

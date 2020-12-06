@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # Project specific
+*.json
 !API-Data-Samples/*.json
 
 *.db
