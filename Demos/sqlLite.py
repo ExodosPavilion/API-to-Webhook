@@ -18,19 +18,16 @@ with con:
         );
     """)
 
-'''
+
 #only needed when we need to add new records to the database
-sql = 'INSERT INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
+sql = 'INSERT OR IGNORE INTO USER (id, name, age) values(?, ?, ?)' #insert command of a new record
 data = [
 	[4, 'Joe', 25]
 ]
 
-try:
-	#actual insertion code
-	with con:
-		con.executemany(sql, data)
-except sqlite3.IntegrityError:
-	print('yea')
+with con:
+	con.executemany(sql, data)
+'''
 
 with con:	
 	data = con.execute("SELECT * FROM USER")
@@ -39,7 +36,10 @@ with con:
 	temp = data.fetchall()
 	
 	print( type(temp) )
-	print( temp )
+	
+	for tempo in temp:
+		print(tempo[0])
+	print( temp == [] )
 
 '''
 
